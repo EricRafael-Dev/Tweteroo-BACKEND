@@ -2,15 +2,25 @@ import express from "express";
 
 const app = express();
 
+app.use(cors());
+app.use(express.json());
 
+let Avatar;
 let Users = [];
 let Tweets = [];
+
+app.get("/tweets", (req, res) => {
+    res.send(ArrayDeTweets.slice(-10));
+})
 
 app.post("/sign-up", (req, res) => {
 
     const { username, avatar } = req.body;
 
-    const newUser = {username, avatar};
+    Avatar = avatar;
+
+
+    const newUser = {username, avatar: Avatar};
 
     Users.push(newUser);
 
@@ -21,9 +31,12 @@ app.post("/sign-up", (req, res) => {
 
 app.post("/tweets", (req, res) => {
 
-    const { username, tweet } = req.body;
+    if(Users.length === 0){
+        return res.status(401).send("Unauthorized");
+    }
 
-    const newTweet = {username, tweet};
+    const { username, tweet } = req.body;
+    const newTweet = {username, avatar: Avatar, tweet};
 
     Tweets.push(newTweet);
 
